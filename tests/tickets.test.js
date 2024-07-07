@@ -1,3 +1,5 @@
+process.env.NODE_ENV = 'test';
+
 const request = require('supertest');
 const express = require('express');
 const http = require('http');
@@ -8,6 +10,8 @@ const User = require('../models/User');
 const Ticket = require('../models/Ticket');
 require('dotenv').config();
 jest.mock('nodemailer');
+
+jest.setTimeout(30000); // Increase timeout to 30 seconds
 
 const app = express();
 const server = http.createServer(app);

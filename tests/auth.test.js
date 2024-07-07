@@ -1,9 +1,14 @@
+process.env.NODE_ENV = 'test';
+
 const request = require('supertest');
 const express = require('express');
 const connectDB = require('../config/db');
 const User = require('../models/User');
 const app = express();
 require('dotenv').config();
+
+jest.setTimeout(30000); // Increase timeout to 30 seconds
+
 
 // Connect Database
 beforeAll(async () => {

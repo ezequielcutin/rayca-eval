@@ -22,6 +22,11 @@ app.set('io', io);
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/tickets', require('./routes/tickets'));
 
+// Root Route
+app.get('/', (req, res) => {
+  res.send('Welcome to the Rayca Eval API');
+});
+
 // Swagger setup
 const swaggerJsDoc = require('swagger-jsdoc');
 

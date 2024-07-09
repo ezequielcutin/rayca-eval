@@ -33,6 +33,42 @@ const sendEmail = (to, subject, text) => {
   });
 };
 
+/**
+ * @swagger
+ * /api/tickets:
+ *   post:
+ *     summary: Create a new ticket
+ *     tags: [Tickets]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               status:
+ *                 type: string
+ *               assignedTo:
+ *                 type: string
+ *             example:
+ *               title: Issue with login
+ *               description: Unable to login with my credentials
+ *               status: open
+ *               assignedTo: 60d0fe4f5311236168a109ca
+ *     responses:
+ *       200:
+ *         description: Ticket created successfully
+ *       400:
+ *         description: Validation error
+ *       500:
+ *         description: Server error
+ */
 // @route   POST api/tickets
 // @desc    Create a ticket
 // @access  Private
@@ -82,6 +118,20 @@ router.post(
   }
 );
 
+/**
+ * @swagger
+ * /api/tickets:
+ *   get:
+ *     summary: Get all tickets
+ *     tags: [Tickets]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of all tickets
+ *       500:
+ *         description: Server error
+ */
 // @route   GET api/tickets
 // @desc    Get all tickets
 // @access  Private
@@ -95,6 +145,51 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/tickets/{id}:
+ *   put:
+ *     summary: Update a ticket
+ *     tags: [Tickets]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ticket ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               status:
+ *                 type: string
+ *               assignedTo:
+ *                 type: string
+ *             example:
+ *               title: Updated issue with login
+ *               description: Still unable to login
+ *               status: open
+ *               assignedTo: 60d0fe4f5311236168a109ca
+ *     responses:
+ *       200:
+ *         description: Ticket updated successfully
+ *       400:
+ *         description: Validation error
+ *       404:
+ *         description: Ticket not found
+ *       500:
+ *         description: Server error
+ */
 // @route   PUT api/tickets/:id
 // @desc    Update a ticket
 // @access  Private
@@ -138,6 +233,29 @@ router.put('/:id', auth, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/tickets/{id}:
+ *   delete:
+ *     summary: Delete a ticket
+ *     tags: [Tickets]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ticket ID
+ *     responses:
+ *       200:
+ *         description: Ticket removed successfully
+ *       404:
+ *         description: Ticket not found
+ *       500:
+ *         description: Server error
+ */
 // @route   DELETE api/tickets/:id
 // @desc    Delete a ticket
 // @access  Private

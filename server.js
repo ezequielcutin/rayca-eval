@@ -28,27 +28,7 @@ app.get('/', (req, res) => {
 });
 
 // Swagger setup
-const swaggerJsDoc = require('swagger-jsdoc');
-
-const swaggerOptions = {
-  swaggerDefinition: {
-    openapi: '3.0.0',
-    info: {
-      title: 'Rayca Eval API',
-      version: '1.0.0',
-      description: 'API Documentation for Rayca Eval Project'
-    },
-    servers: [
-      {
-        url: `https://${process.env.HEROKU_APP_NAME}.herokuapp.com`
-      }
-    ],
-  },
-  apis: ['./routes/*.js'],
-};
-
-const swaggerDocs = swaggerJsDoc(swaggerOptions);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // WebSocket connection
 io.on('connection', (socket) => {

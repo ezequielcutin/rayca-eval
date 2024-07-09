@@ -9,7 +9,6 @@ require('dotenv').config();
 
 jest.setTimeout(30000); // Increase timeout to 30 seconds
 
-
 // Connect Database
 beforeAll(async () => {
   await connectDB();

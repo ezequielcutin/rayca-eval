@@ -9,6 +9,39 @@ const auth = require('../middlewares/auth'); // Import auth middleware
 require('dotenv').config();
 const jwtSecret = process.env.JWT_SECRET;
 
+/**
+ * @swagger
+ * /api/auth/register:
+ *   post:
+ *     summary: Register a new user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
+ *                 format: password
+ *             example:
+ *               name: John Doe
+ *               email: johndoe@example.com
+ *               password: password123
+ *     responses:
+ *       200:
+ *         description: Successful registration
+ *       400:
+ *         description: Validation error
+ *       500:
+ *         description: Server error
+ */
 // @route    POST api/auth/register
 // @desc     Register user
 // @access   Public
@@ -71,6 +104,36 @@ router.post(
   }
 );
 
+/**
+ * @swagger
+ * /api/auth/login:
+ *   post:
+ *     summary: Log in a user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
+ *                 format: password
+ *             example:
+ *               email: johndoe@example.com
+ *               password: password123
+ *     responses:
+ *       200:
+ *         description: Successful login
+ *       400:
+ *         description: Validation error or invalid credentials
+ *       500:
+ *         description: Server error
+ */
 // @route    POST api/auth/login
 // @desc     Authenticate user & get token
 // @access   Public
@@ -123,6 +186,22 @@ router.post(
   }
 );
 
+/**
+ * @swagger
+ * /api/auth/user:
+ *   get:
+ *     summary: Get user data
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: User data retrieved successfully
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Server error
+ */
 // @route    GET api/auth/user
 // @desc     Get user data
 // @access   Private

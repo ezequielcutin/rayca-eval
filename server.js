@@ -2,7 +2,6 @@ const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = require('./swagger.json');
 const connectDB = require('./config/db');
 require('dotenv').config();
 
@@ -24,11 +23,31 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/tickets', require('./routes/tickets'));
 
 // Swagger setup
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+const swaggerJsDoc = require('swagger-jsdoc');
+
+const swaggerOptions = {
+  swaggerDefinition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Rayca Eval API',
+      version: '1.0.0',
+      description: 'API Documentation for Rayca Eval Project'
+    },
+    servers: [
+      {
+        url: `http://localhost:${process.env.PORT}`
+      }
+    ],
+  },
+  apis: ['./routes/*.js'],
+};
+
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // WebSocket connection
 io.on('connection', (socket) => {
-console.log('New WebSocket connection');
+  console.log('New WebSocket connection');
 });
 
 const PORT = process.env.PORT || 5001;

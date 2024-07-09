@@ -40,7 +40,7 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: `https://${process.env.HEROKU_APP_NAME}.herokuapp.com` // Ensure this matches your Heroku app URL
+        url: `https://${process.env.HEROKU_APP_NAME}.herokuapp.com`
       }
     ],
   },

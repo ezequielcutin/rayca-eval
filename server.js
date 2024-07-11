@@ -2,6 +2,7 @@ const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger.json')
 const connectDB = require('./config/db');
 require('dotenv').config();
 

@@ -31,6 +31,6 @@ io.on('connection', (socket) => {
 console.log('New WebSocket connection');
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 server.listen(PORT, () => console.log(`Server started on port ${PORT}`));

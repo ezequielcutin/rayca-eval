@@ -1,259 +1,264 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "Customer Support Ticket API",
-        "version": "1.0.0",
-        "description": "API documentation for the Customer Support Ticket microservice"
+      "title": "Customer Support Ticket API",
+      "version": "1.0.0",
+      "description": "API documentation for the Customer Support Ticket microservice"
     },
     "servers": [
-        {
-            "url": "http://localhost:5001",
-            "description": "Local server"
-        }
+      {
+        "url": "http://localhost:5001",
+        "description": "Local server"
+      }
     ],
     "components": {
-        "securitySchemes": {
-            "BearerAuth": {
-                "type": "http",
-                "scheme": "bearer",
-                "bearerFormat": "JWT"
-            }
+      "securitySchemes": {
+        "BearerAuth": {
+          "type": "http",
+          "scheme": "bearer",
+          "bearerFormat": "JWT"
         }
+      }
     },
     "security": [
-        {
-            "BearerAuth": []
-        }
+      {
+        "BearerAuth": []
+      }
     ],
     "paths": {
-        "/api/auth/register": {
-            "post": {
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Register a new user",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "name": {
-                                        "type": "string",
-                                        "example": "John Doe"
-                                    },
-                                    "email": {
-                                        "type": "string",
-                                        "example": "johndoe@example.com"
-                                    },
-                                    "password": {
-                                        "type": "string",
-                                        "example": "password123"
-                                    }
-                                },
-                                "required": [
-                                    "name",
-                                    "email",
-                                    "password"
-                                ]
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "User registered successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "token": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            }
-                        }
+      "/api/auth/register": {
+        "post": {
+          "tags": [
+            "User Functions"
+          ],
+          "summary": "Register a new user",
+          "description": "You can either run these curl commands or attempt to do the \"Try it out\" function below.. Please note that the \"Try it out\" only works for those functions where you don't need a token.\n\nTo register a user via the terminal using `curl`, follow these steps:\n\n```sh\ncurl -X POST http://localhost:5001/api/auth/register \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"name\": \"John Doe\", \"email\": \"johndoe@example.com\", \"password\": \"password123\"}'\n```",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "example": "John Doe"
                     },
-                    "400": {
-                        "description": "Bad request"
-                    }
-                }
-            }
-        },
-        "/api/auth/login": {
-            "post": {
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Log in a user",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "email": {
-                                        "type": "string",
-                                        "example": "johndoe@example.com"
-                                    },
-                                    "password": {
-                                        "type": "string",
-                                        "example": "password123"
-                                    }
-                                },
-                                "required": [
-                                    "email",
-                                    "password"
-                                ]
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "User logged in successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "token": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                    "email": {
+                      "type": "string",
+                      "example": "johndoe@example.com"
                     },
-                    "400": {
-                        "description": "Bad request"
+                    "password": {
+                      "type": "string",
+                      "example": "password123"
                     }
+                  },
+                  "required": [
+                    "name",
+                    "email",
+                    "password"
+                  ]
                 }
+              }
             }
-        },
-        "/api/auth/user": {
-            "get": {
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Get user data",
-                "security": [
-                    {
-                        "BearerAuth": []
+          },
+          "responses": {
+            "200": {
+              "description": "User registered successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "token": {
+                        "type": "string"
+                      }
                     }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "User data retrieved successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "name": {
-                                            "type": "string"
-                                        },
-                                        "email": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request"
+            }
+          }
+        }
+      },
+      "/api/auth/login": {
+        "post": {
+          "tags": [
+            "User Functions"
+          ],
+          "summary": "Log in a user",
+          "description": "You can either run these curl commands or attempt to do the \"Try it out\" function. Please note that the \"Try it out\" only works for those functions where you don't need a token.\n\nTo log in a user via the terminal using `curl`, follow these steps:\n\n```sh\ncurl -X POST http://localhost:5001/api/auth/login \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"email\": \"johndoe@example.com\", \"password\": \"password123\"}'\n```",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "type": "string",
+                      "example": "johndoe@example.com"
                     },
-                    "401": {
-                        "description": "Unauthorized"
+                    "password": {
+                      "type": "string",
+                      "example": "password123"
                     }
+                  },
+                  "required": [
+                    "email",
+                    "password"
+                  ]
                 }
+              }
             }
-        },
+          },
+          "responses": {
+            "200": {
+              "description": "User logged in successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "token": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request"
+            }
+          }
+        }
+      },
+      "/api/auth/user": {
+        "get": {
+          "tags": [
+            "User Functions"
+          ],
+          "summary": "Get user data",
+          "description": "To get user data via the terminal using `curl`, follow these steps:\n\n1. **Register a User and get the token** (if you don't have an account already):\n```sh\nTOKEN=$(curl -s -X POST http://localhost:5001/api/auth/register \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"name\": \"ExampleName\", \"email\": \"ExampleEmail@example.com\", \"password\": \"password123\"}' | jq -r '.token')\n```\n\n2. **Or Login to get the token** (if you already have an account):\n```sh\nTOKEN=$(curl -s -X POST http://localhost:5001/api/auth/login \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"email\": \"ExampleEmail@example.com\", \"password\": \"password123\"}' | jq -r '.token')\n```\n\n3. **Use the token to get user data**:\n```sh\ncurl -X GET http://localhost:5001/api/auth/user \\\n  -H \"Content-Type: application/json\" \\\n  -H \"x-auth-token: $TOKEN\"\n```",
+          "security": [
+            {
+              "BearerAuth": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "User data retrieved successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "email": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized"
+            }
+          }
+        }
+      },
         "/api/tickets": {
             "post": {
-                "tags": [
-                    "Tickets"
-                ],
-                "summary": "Create a new ticket",
-                "description": "To create a ticket via the terminal using `curl`, follow these steps:\n\n1. **Register a User**:\n```sh\ncurl -X POST http://localhost:5001/api/auth/register \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"name\": \"Eze\", \"email\": \"eze@example.com\", \"password\": \"password123\"}'\n```\n\n2. **Login to get the token**:\n```sh\ncurl -X POST http://localhost:5001/api/auth/login \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"email\": \"eze@example.com\", \"password\": \"password123\"}'\n```\n\n3. **Use the token to create a ticket**:\n```sh\ncurl -X POST http://localhost:5001/api/tickets \\\n  -H \"Content-Type: application/json\" \\\n  -H \"x-auth-token: <YOUR_JWT_TOKEN>\" \\\n  -d '{\n    \"title\": \"Testing out tickets\",\n    \"description\": \"I can't see tickets on mongoDB yet.\",\n    \"status\": \"open\",\n    \"assignedTo\": \"668f604a28f0c1868c0908f6\"\n}'\n```\n\nReplace `<YOUR_JWT_TOKEN>` with the token you received from the login request.",
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "title": {
-                                        "type": "string",
-                                        "example": "Issue with login"
-                                    },
-                                    "description": {
-                                        "type": "string",
-                                        "example": "Unable to login with my credentials"
-                                    },
-                                    "status": {
-                                        "type": "string",
-                                        "example": "open"
-                                    },
-                                    "assignedTo": {
-                                        "type": "string",
-                                        "example": "60d0fe4f5311236168a109ca"
-                                    }
-                                },
-                                "required": [
-                                    "title",
-                                    "description"
-                                ]
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Ticket created successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "title": {
-                                            "type": "string"
-                                        },
-                                        "description": {
-                                            "type": "string"
-                                        },
-                                        "status": {
-                                            "type": "string"
-                                        },
-                                        "assignedTo": {
-                                            "type": "string"
-                                        },
-                                        "user": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request"
-                    }
+              "tags": [
+                "Ticket Functions"
+              ],
+              "summary": "Create a new ticket",
+              "description": "To create a ticket via the terminal using `curl`, follow these steps:\n\n1. **Register a User and get the token** (if you don't have an account already):\n```sh\nTOKEN=$(curl -s -X POST http://localhost:5001/api/auth/register \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"name\": \"ExampleName\", \"email\": \"ExampleEmail@example.com\", \"password\": \"password123\"}' | jq -r '.token')\n```\n\n2.  **Or Login to get the token** (if you already have an account):\n```sh\nTOKEN=$(curl -s -X POST http://localhost:5001/api/auth/login \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"email\": \"ExampleEmail@example.com\", \"password\": \"password123\"}' | jq -r '.token')\n```\n\n3. **Use the token to create a ticket**:\n```sh\ncurl -X POST http://localhost:5001/api/tickets \\\n  -H \"Content-Type: application/json\" \\\n  -H \"x-auth-token: $TOKEN\" \\\n  -d '{\n    \"title\": \"Ticket Subject\",\n    \"description\": \"Ticket Description.\",\n    \"status\": \"open\",\n    \"assignedToEmail\": \"UserTicketAssigned@example.com\"\n}'\n```\n\nThis will create a ticket, posted on MongoDB, as well as send out an email from the User that created the ticket to the ticket recipient. \n\n**Note:** The \"Try it out\" button won't work for this endpoint as it needs your login token, and there's no way to code that in Swagger.",
+              "security": [
+                {
+                  "BearerAuth": []
                 }
+              ],
+              "requestBody": {
+                "required": true,
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "type": "string",
+                          "example": "Issue with login"
+                        },
+                        "description": {
+                          "type": "string",
+                          "example": "Unable to login with my credentials"
+                        },
+                        "status": {
+                          "type": "string",
+                          "example": "open"
+                        },
+                        "assignedToEmail": {
+                          "type": "string",
+                          "example": "johndoe@example.com"
+                        }
+                      },
+                      "required": [
+                        "title",
+                        "description",
+                        "status",
+                        "assignedToEmail"
+                      ]
+                    }
+                  }
+                }
+              },
+              "responses": {
+                "200": {
+                  "description": "Ticket created successfully",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "title": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string"
+                          },
+                          "assignedTo": {
+                            "type": "string"
+                          },
+                          "user": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "400": {
+                  "description": "Bad request"
+                }
+              }
             },
             "get": {
                 "tags": [
-                    "Tickets"
+                    "Ticket Functions"
                 ],
                 "summary": "Get all tickets",
-                "description": "To get all tickets via the terminal using `curl`, follow these steps:\n\n1. **Login to get the token**:\n```sh\ncurl -X POST http://localhost:5001/api/auth/login \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"email\": \"youremail@example.com\", \"password\": \"password123\"}'\n```\n\n2. **Use the token to get all tickets**:\n```sh\ncurl -X GET http://localhost:5001/api/tickets \\\n  -H \"Content-Type: application/json\" \\\n  -H \"x-auth-token: <YOUR_JWT_TOKEN>\"\n```\n\nReplace `<YOUR_JWT_TOKEN>` with the token you received from the login request.",
+                "description": "To get all tickets via the terminal using `curl`, follow these steps:\n\n1. **Register a User and get the token** (if you don't have an account already):\n```sh\nTOKEN=$(curl -s -X POST http://localhost:5001/api/auth/register \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"name\": \"ExampleName\", \"email\": \"ExampleEmail@example.com\", \"password\": \"password123\"}' | jq -r '.token')\n```\n\n2.  **Or Login to get the token** (if you already have an account):\n```sh\nTOKEN=$(curl -s -X POST http://localhost:5001/api/auth/login \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"email\": \"ExampleEmail@example.com\", \"password\": \"password123\"}' | jq -r '.token')\n```\n\n3. **Use the token to get all tickets**:\n```sh\ncurl -X GET http://localhost:5001/api/tickets \\\n  -H \"Content-Type: application/json\" \\\n  -H \"x-auth-token: $TOKEN\"\n ```\n\nThis will output all tockens into your terminal in .JSON format. Ideally used for admin purposes. \n\n**Note:** The \"Try it out\" button won't work for this endpoint as it needs your login token, and there's no way to code that in Swagger.",
                 "security": [
                     {
                         "BearerAuth": []
@@ -299,10 +304,10 @@
         "/api/tickets/{id}": {
             "put": {
                 "tags": [
-                    "Tickets"
+                    "Ticket Functions"
                 ],
                 "summary": "Update a ticket",
-                "description": "To update a ticket via the terminal using `curl`, follow these steps:\n\n1. **Login to get the token**:\n```sh\ncurl -X POST http://localhost:5001/api/auth/login \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"email\": \"youremail@example.com\", \"password\": \"password123\"}'\n```\n\n2. **Use the token to update a ticket**:\n```sh\ncurl -X PUT http://localhost:5001/api/tickets/<TICKET_ID> \\\n  -H \"Content-Type: application/json\" \\\n  -H \"x-auth-token: <YOUR_JWT_TOKEN>\" \\\n  -d '{\n    \"title\": \"Updated title\",\n    \"description\": \"Updated description.\",\n    \"status\": \"open\",\n    \"assignedTo\": \"user number to assign to (can be yourself)\"\n}'\n```\n\nReplace `<YOUR_JWT_TOKEN>` with the token you received from the login request and `<TICKET_ID>` with the ID of the ticket you want to update.",
+                "description": "To update a ticket via the terminal using `curl`, follow these steps:\n\n1. **Register a User and get the token** (if you don't have an account already):\n```sh\nTOKEN=$(curl -s -X POST http://localhost:5001/api/auth/register \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"name\": \"ExampleName\", \"email\": \"ExampleEmail@example.com\", \"password\": \"password123\"}' | jq -r '.token')\n```\n\n2.  **Or Login to get the token** (if you already have an account):\n```sh\nTOKEN=$(curl -s -X POST http://localhost:5001/api/auth/login \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"email\": \"ExampleEmail@example.com\", \"password\": \"password123\"}' | jq -r '.token')\n```\n\n3. **Use the token to update a ticket**:\n```sh\ncurl -X PUT http://localhost:5001/api/tickets/<TICKET_ID> \\\n  -H \"Content-Type: application/json\" \\\n  -H \"x-auth-token: $TOKEN\" \\\n  -d '{\n    \"title\": \"Updated title\",\n    \"description\": \"Updated description.\",\n    \"status\": \"open\",\n    \"assignedToEmail\": \"test@example.com\"\n}'\n```\n\nReplace `<TICKET_ID>` at the top of the `curl` command with the ID of the ticket you want to update. \n\n**Note:** The \"Try it out\" button won't work for this endpoint as it needs your login token, and there's no way to code that in Swagger.",
                 "security": [
                     {
                         "BearerAuth": []
@@ -384,10 +389,10 @@
             },
             "delete": {
                 "tags": [
-                    "Tickets"
+                    "Ticket Functions"
                 ],
                 "summary": "Delete a ticket",
-                "description": "To delete a ticket via the terminal using `curl`, follow these steps:\n\n1. **Login to get the token**:\n```sh\ncurl -X POST http://localhost:5001/api/auth/login \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"email\": \"youremail@example.com\", \"password\": \"password123\"}'\n```\n\n2. **Use the token to delete a ticket**:\n```sh\ncurl -X DELETE http://localhost:5001/api/tickets/<TICKET_ID> \\\n  -H \"Content-Type: application/json\" \\\n  -H \"x-auth-token: <YOUR_JWT_TOKEN>\"\n```\n\nReplace `<YOUR_JWT_TOKEN>` with the token you received from the login request and `<TICKET_ID>` with the ID of the ticket you want to delete.",
+                "description": "To delete a ticket via the terminal using `curl`, follow these steps:\n\n1. **Register a User and get the token** (if you don't have an account already):\n```sh\nTOKEN=$(curl -s -X POST http://localhost:5001/api/auth/register \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"name\": \"ExampleName\", \"email\": \"ExampleEmail@example.com\", \"password\": \"password123\"}' | jq -r '.token')\n```\n\n2.  **Or Login to get the token** (if you already have an account):\n```sh\nTOKEN=$(curl -s -X POST http://localhost:5001/api/auth/login \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"email\": \"ExampleEmail@example.com\", \"password\": \"password123\"}' | jq -r '.token')\n```\n\n3. **Use the token to delete a ticket**:\n```sh\ncurl -X DELETE http://localhost:5001/api/tickets/<TICKET_ID> \\\n  -H \"Content-Type: application/json\" \\\n  -H \"x-auth-token: <YOUR_JWT_TOKEN>\"\n```\n\nReplace `<TICKET_ID>` at the top of the `curl` command with the ID of the ticket you want to delete.\n\n**Note:** The \"Try it out\" button won't work for this endpoint as it needs your login token, and there's no way to code that in Swagger.",
                 "security": [
                     {
                         "BearerAuth": []

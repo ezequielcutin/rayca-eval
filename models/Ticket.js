@@ -18,8 +18,18 @@ const TicketSchema = new mongoose.Schema({
     default: 'open',
   },
   assignedTo: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'users',
+    id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'users',
+    },
+    email: {
+      type: String,
+      required: true,
+    },
+    name: {
+      type: String,
+      required: true,
+    },
   },
   date: {
     type: Date,
@@ -27,4 +37,4 @@ const TicketSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model('Ticket', TicketSchema);
+module.exports = mongoose.model('ticket', TicketSchema);

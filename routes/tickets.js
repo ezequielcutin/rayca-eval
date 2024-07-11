@@ -1,13 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { check, validationResult } = require('express-validator');
+const auth = require('../middlewares/auth');
 const Ticket = require('../models/Ticket');
-const User = require('../models/User'); // Import User model
-const auth = require('../middlewares/auth'); // Import auth middleware
+const User = require('../models/User');
 const nodemailer = require('nodemailer');
-require('dotenv').config();
+const { check, validationResult } = require('express-validator');
 
-// Set up Nodemailer transporter
+// Initialize nodemailer transporter
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -16,62 +15,9 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Function to send email
-const sendEmail = (to, subject, text) => {
-  const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to,
-    subject,
-    text,
-  };
-
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      return console.error(error);
-    }
-    console.log('Email sent: ' + info.response);
-  });
-};
-
-/**
- * @swagger
- * /api/tickets:
- *   post:
- *     summary: Create a new ticket
- *     tags: [Tickets]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               title:
- *                 type: string
- *               description:
- *                 type: string
- *               status:
- *                 type: string
- *               assignedTo:
- *                 type: string
- *             example:
- *               title: Issue with login
- *               description: Unable to login with my credentials
- *               status: open
- *               assignedTo: 60d0fe4f5311236168a109ca
- *     responses:
- *       200:
- *         description: Ticket created successfully
- *       400:
- *         description: Validation error
- *       500:
- *         description: Server error
- */
-// @route   POST api/tickets
-// @desc    Create a ticket
-// @access  Private
+// @route    POST api/tickets
+// @desc     Create a ticket
+// @access   Private
 router.post(
   '/',
   [
@@ -79,6 +25,7 @@ router.post(
     [
       check('title', 'Title is required').not().isEmpty(),
       check('description', 'Description is required').not().isEmpty(),
+      check('assignedToEmail', 'AssignedToEmail is required').isEmail(),
     ],
   ],
   async (req, res) => {
@@ -87,28 +34,42 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { title, description, status, assignedTo } = req.body;
+    const { title, description, assignedToEmail } = req.body;
 
     try {
+      const assignedToUser = await User.findOne({ email: assignedToEmail });
+      if (!assignedToUser) {
+        return res.status(404).json({ msg: 'Assigned user not found' });
+      }
+
       const newTicket = new Ticket({
+        user: req.user.id,
         title,
         description,
-        status,
-        assignedTo,
-        user: req.user.id,
+        assignedTo: {
+          id: assignedToUser.id,
+          name: assignedToUser.name,
+          email: assignedToUser.email,
+        },
       });
 
       const ticket = await newTicket.save();
 
-      // Emit event to notify users about the ticket creation
-      req.app.get('io').emit('ticketCreated', ticket);
+      // Send email notification (this can be commented out if causing issues)
+      const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: assignedToEmail,
+        subject: 'New Ticket Assigned',
+        text: `A new ticket with title "${title}" has been assigned to you.`,
+      };
 
-      // Fetch the email of the user who created the ticket
-      const user = await User.findById(req.user.id);
-      const userEmail = user.email;
-
-      // Send email notification
-      sendEmail(userEmail, 'New Ticket Created', `A new ticket has been created:\n\nTitle: ${ticket.title}\nDescription: ${ticket.description}`);
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error(error);
+        } else {
+          console.log('Email sent: ' + info.response);
+        }
+      });
 
       res.json(ticket);
     } catch (err) {
@@ -118,26 +79,13 @@ router.post(
   }
 );
 
-/**
- * @swagger
- * /api/tickets:
- *   get:
- *     summary: Get all tickets
- *     tags: [Tickets]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: List of all tickets
- *       500:
- *         description: Server error
- */
-// @route   GET api/tickets
-// @desc    Get all tickets
-// @access  Private
+
+// @route    GET api/tickets
+// @desc     Get all tickets
+// @access   Private
 router.get('/', auth, async (req, res) => {
   try {
-    const tickets = await Ticket.find().sort({ date: -1 });
+    const tickets = await Ticket.find({ user: req.user.id });
     res.json(tickets);
   } catch (err) {
     console.error(err.message);
@@ -145,86 +93,60 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
-/**
- * @swagger
- * /api/tickets/{id}:
- *   put:
- *     summary: Update a ticket
- *     tags: [Tickets]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: string
- *         required: true
- *         description: The ticket ID
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               title:
- *                 type: string
- *               description:
- *                 type: string
- *               status:
- *                 type: string
- *               assignedTo:
- *                 type: string
- *             example:
- *               title: Updated issue with login
- *               description: Still unable to login
- *               status: open
- *               assignedTo: 60d0fe4f5311236168a109ca
- *     responses:
- *       200:
- *         description: Ticket updated successfully
- *       400:
- *         description: Validation error
- *       404:
- *         description: Ticket not found
- *       500:
- *         description: Server error
- */
-// @route   PUT api/tickets/:id
-// @desc    Update a ticket
-// @access  Private
+// @route    PUT api/tickets/:id
+// @desc     Update a ticket
+// @access   Private
 router.put('/:id', auth, async (req, res) => {
-  const { title, description, status, assignedTo } = req.body;
+  const { title, description, status, assignedToEmail } = req.body;
 
   const ticketFields = {};
   if (title) ticketFields.title = title;
   if (description) ticketFields.description = description;
   if (status) ticketFields.status = status;
-  if (assignedTo) ticketFields.assignedTo = assignedTo;
 
   try {
     let ticket = await Ticket.findById(req.params.id);
 
     if (!ticket) return res.status(404).json({ msg: 'Ticket not found' });
 
-    // Update
+    // Ensure user owns ticket
+    if (ticket.user.toString() !== req.user.id) {
+      return res.status(401).json({ msg: 'User not authorized' });
+    }
+
+    if (assignedToEmail) {
+      const assignedUser = await User.findOne({ email: assignedToEmail });
+      if (!assignedUser) {
+        return res.status(404).json({ msg: 'Assigned user not found' });
+      }
+      ticketFields.assignedTo = {
+        id: assignedUser._id,
+        email: assignedUser.email,
+        name: assignedUser.name,
+      };
+
+      // Send email notification (this can be commented out if causing issues)
+      const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: assignedToEmail,
+        subject: 'Ticket Updated and Assigned',
+        text: `A ticket with title "${title}" has been assigned to you.`,
+      };
+
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error(error);
+        } else {
+          console.log('Email sent: ' + info.response);
+        }
+      });
+    }
+
     ticket = await Ticket.findByIdAndUpdate(
       req.params.id,
       { $set: ticketFields },
       { new: true }
     );
-
-    // Emit event to notify users about the ticket update
-    req.app.get('io').emit('ticketUpdated', ticket);
-
-    // Fetch the email of the user assigned to the ticket (if any)
-    if (ticket.assignedTo) {
-      const assignedUser = await User.findById(ticket.assignedTo);
-      const assignedUserEmail = assignedUser.email;
-
-      // Send email notification
-      sendEmail(assignedUserEmail, 'Ticket Updated', `A ticket has been updated:\n\nTitle: ${ticket.title}\nDescription: ${ticket.description}`);
-    }
 
     res.json(ticket);
   } catch (err) {
@@ -233,49 +155,21 @@ router.put('/:id', auth, async (req, res) => {
   }
 });
 
-/**
- * @swagger
- * /api/tickets/{id}:
- *   delete:
- *     summary: Delete a ticket
- *     tags: [Tickets]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: string
- *         required: true
- *         description: The ticket ID
- *     responses:
- *       200:
- *         description: Ticket removed successfully
- *       404:
- *         description: Ticket not found
- *       500:
- *         description: Server error
- */
-// @route   DELETE api/tickets/:id
-// @desc    Delete a ticket
-// @access  Private
+// @route    DELETE api/tickets/:id
+// @desc     Delete a ticket
+// @access   Private
 router.delete('/:id', auth, async (req, res) => {
   try {
-    let ticket = await Ticket.findById(req.params.id);
+    const ticket = await Ticket.findById(req.params.id);
 
     if (!ticket) return res.status(404).json({ msg: 'Ticket not found' });
 
-    await Ticket.findByIdAndDelete(req.params.id);
+    // Ensure user owns ticket
+    if (ticket.user.toString() !== req.user.id) {
+      return res.status(401).json({ msg: 'User not authorized' });
+    }
 
-    // Emit event to notify users about the ticket deletion
-    req.app.get('io').emit('ticketDeleted', { id: req.params.id });
-
-    // Fetch the email of the user who created the ticket
-    const user = await User.findById(ticket.user);
-    const userEmail = user.email;
-
-    // Send email notification
-    sendEmail(userEmail, 'Ticket Deleted', `A ticket has been deleted:\n\nTitle: ${ticket.title}`);
+    await ticket.remove();
 
     res.json({ msg: 'Ticket removed' });
   } catch (err) {

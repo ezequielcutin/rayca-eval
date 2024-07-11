@@ -29,7 +29,8 @@ app.get('/', (req, res) => {
 });
 
 // Swagger setup
-const swaggerJsDoc = require('swagger-jsdoc');
+// const swaggerJsDoc = require('swagger-jsdoc');
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 const swaggerOptions = {
   swaggerDefinition: {
@@ -48,8 +49,8 @@ const swaggerOptions = {
   apis: ['./routes/*.js'],
 };
 
-const swaggerDocs = swaggerJsDoc(swaggerOptions);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+// const swaggerDocs = swaggerJsDoc(swaggerOptions);
+// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // WebSocket connection
 io.on('connection', (socket) => {
